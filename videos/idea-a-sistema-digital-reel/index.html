@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>De Idea a Sistema Digital — Reel</title>
+    <script src="./gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #000000;
+      }
+      body {
+        font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #000000;
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background: #000000;
+      }
+
+      .grotesk {
+        font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
+        color: #ffffff;
+      }
+
+      .mono {
+        font-family: "Courier New", monospace;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.45);
+      }
+
+      .cursor {
+        display: inline-block;
+        width: 14px;
+        height: 74px;
+        background: #ff5500;
+        margin-left: 10px;
+        vertical-align: -14px;
+        box-shadow: 0 0 30px 4px rgba(255, 85, 0, 0.8);
+      }
+      .cursor.small {
+        width: 10px;
+        height: 40px;
+        vertical-align: -8px;
+        box-shadow: 0 0 20px 3px rgba(255, 85, 0, 0.75);
+      }
+
+      .flash {
+        position: absolute;
+        inset: 0;
+        background: #000000;
+        opacity: 0;
+        z-index: 50;
+      }
+
+      /* ================= IDEA ================= */
+      #scene-idea {
+        display: grid;
+        place-items: center;
+      }
+      #idea-grid {
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255, 85, 0, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 85, 0, 0.05) 1px, transparent 1px);
+        background-size: 54px 54px;
+      }
+      #idea-line1 {
+        position: absolute;
+        top: 46%;
+        left: 90px;
+        right: 90px;
+        text-align: center;
+        font-size: 80px;
+        line-height: 1.08;
+      }
+      #idea-word {
+        display: inline-block;
+        transform-origin: center;
+      }
+      #idea-tag {
+        position: absolute;
+        top: 30%;
+        left: 90px;
+        right: 90px;
+        text-align: center;
+        font-size: 26px;
+        opacity: 0;
+      }
+
+      /* ================= CAOS ================= */
+      #scene-chaos {
+        background: #050505;
+        opacity: 0;
+      }
+      #chaos-shake {
+        position: absolute;
+        inset: -50px;
+      }
+      .cnote {
+        position: absolute;
+        width: 320px;
+        padding: 20px;
+        background: #0a0a0a;
+        border: 2px solid #232323;
+        border-radius: 4px;
+        color: #ffffff;
+        font-family: "Courier New", monospace;
+        font-size: 22px;
+        font-weight: 700;
+        opacity: 0;
+      }
+      .cblock {
+        position: absolute;
+        border: 2px solid #ff5500;
+        border-radius: 4px;
+        opacity: 0;
+      }
+      .cline {
+        position: absolute;
+        height: 3px;
+        background: #ff5500;
+        box-shadow: 0 0 14px 1px rgba(255, 85, 0, 0.7);
+        transform-origin: left center;
+      }
+      #chaos-shout {
+        position: absolute;
+        left: 90px;
+        right: 90px;
+        top: 40%;
+        text-align: center;
+        font-size: 58px;
+        line-height: 1.1;
+        opacity: 0;
+      }
+
+      /* ================= CONSTRUYE ================= */
+      #scene-build {
+        background: #000000;
+        perspective: 1600px;
+        opacity: 0;
+      }
+      #build-grid {
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+        background-size: 48px 48px;
+        opacity: 0;
+      }
+      #build-word {
+        position: absolute;
+        top: 15%;
+        left: 60px;
+        right: 60px;
+        text-align: center;
+        color: #ff5500;
+        opacity: 0;
+      }
+      #build-stack {
+        position: absolute;
+        top: 42%;
+        left: 90px;
+        right: 90px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        transform-style: preserve-3d;
+      }
+      .build-card {
+        background: #0a0a0a;
+        border: 2px solid #262626;
+        border-radius: 10px;
+        height: 150px;
+        position: relative;
+        opacity: 0;
+        transform-origin: center;
+      }
+      .build-card .cbar {
+        position: absolute;
+        left: 24px;
+        right: 24px;
+        height: 16px;
+        background: #262626;
+        border-radius: 4px;
+      }
+      .build-card .cdot {
+        position: absolute;
+        top: 22px;
+        left: 24px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #ff5500;
+      }
+
+      /* ================= AUTOMATIZA ================= */
+      #scene-automate {
+        background: #000000;
+        opacity: 0;
+      }
+      #automate-word {
+        position: absolute;
+        top: 12%;
+        left: 60px;
+        right: 60px;
+        text-align: center;
+        opacity: 0;
+      }
+      #automate-graph {
+        position: absolute;
+        top: 32%;
+        left: 140px;
+        right: 140px;
+        height: 640px;
+      }
+      .anode {
+        position: absolute;
+        width: 84px;
+        height: 84px;
+        margin-left: -42px;
+        margin-top: -42px;
+        border-radius: 50%;
+        background: #0a0a0a;
+        border: 3px solid #2a2a2a;
+        opacity: 0;
+      }
+      .anode .acore {
+        position: absolute;
+        inset: 26px;
+        border-radius: 50%;
+        background: #2a2a2a;
+      }
+      .alink {
+        position: absolute;
+        height: 5px;
+        background: #2a2a2a;
+        transform-origin: 0 center;
+      }
+      .alink .aflow {
+        position: absolute;
+        top: -7px;
+        width: 19px;
+        height: 19px;
+        border-radius: 50%;
+        background: #ff5500;
+        box-shadow: 0 0 24px 5px rgba(255, 85, 0, 0.85);
+        opacity: 0;
+      }
+      #automate-status {
+        position: absolute;
+        bottom: 14%;
+        left: 90px;
+        right: 90px;
+        text-align: center;
+        opacity: 0;
+      }
+
+      /* ================= ESCALA ================= */
+      #scene-scale {
+        background: #000000;
+        display: grid;
+        place-items: center;
+        opacity: 0;
+      }
+      #scale-panel {
+        position: absolute;
+        top: 20%;
+        left: 90px;
+        right: 90px;
+        bottom: 20%;
+        background: #060606;
+        border: 2px solid #1e1e1e;
+        border-radius: 18px;
+        opacity: 0;
+      }
+      #scale-word {
+        position: absolute;
+        top: 8%;
+        left: 60px;
+        right: 60px;
+        text-align: center;
+        opacity: 0;
+      }
+      #scale-metric-label {
+        position: absolute;
+        top: 27%;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 26px;
+      }
+      #scale-metric {
+        position: absolute;
+        top: 31%;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 148px;
+        color: #ff5500;
+        font-weight: 900;
+      }
+      #scale-bars {
+        position: absolute;
+        bottom: 15%;
+        left: 150px;
+        right: 150px;
+        height: 340px;
+        display: flex;
+        align-items: flex-end;
+        gap: 20px;
+      }
+      .sbar {
+        flex: 1;
+        background: linear-gradient(to top, #7a2b00, #ff5500);
+        border-radius: 4px 4px 0 0;
+        height: 100%;
+      }
+
+      /* ================= MANIFIESTO ================= */
+      #scene-manifesto {
+        display: grid;
+        place-items: center;
+      }
+      #manifesto-dot {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        margin: -12px 0 0 -12px;
+        left: 50%;
+        top: 50%;
+        border-radius: 50%;
+        background: #ff5500;
+        box-shadow: 0 0 80px 20px rgba(255, 85, 0, 0.9);
+        opacity: 0;
+      }
+      #manifesto-card-1,
+      #manifesto-card-2 {
+        position: absolute;
+        left: 70px;
+        right: 70px;
+        text-align: center;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0;
+      }
+      #manifesto-card-1 .line,
+      #manifesto-card-2 .line {
+        line-height: 1.08;
+      }
+      #manifesto-card-2 .accent {
+        color: #ff5500;
+      }
+      #manifesto-final-cursor {
+        position: absolute;
+        left: 50%;
+        bottom: 26%;
+        transform: translateX(-50%);
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="10"
+      data-width="1080"
+      data-height="1920"
+    >
+      <!-- ============ 1. IDEA :: 0.00 - 1.05 ============ -->
+      <section id="scene-idea" class="scene clip" data-start="0" data-duration="1.05" data-track-index="1">
+        <div id="idea-grid"></div>
+        <div id="idea-tag" class="mono">SISTEMA · 01</div>
+        <div id="idea-line1" class="grotesk">
+          TIENES UNA<br />
+          <span id="idea-word">IDEA<span class="cursor" id="idea-cursor"></span></span>.
+        </div>
+      </section>
+
+      <!-- ============ 2. CAOS :: 0.95 - 2.25 ============ -->
+      <section id="scene-chaos" class="scene clip" data-start="0.95" data-duration="1.30" data-track-index="2">
+        <div id="chaos-shake" data-layout-allow-overflow>
+          <div class="cblock" style="left: 80px; top: 260px; width: 300px; height: 210px; transform: rotate(-5deg)"></div>
+          <div class="cblock" style="right: 100px; top: 180px; width: 260px; height: 170px; transform: rotate(4deg)"></div>
+          <div class="cblock" style="left: 140px; top: 1150px; width: 280px; height: 190px; transform: rotate(3deg)"></div>
+          <div class="cblock" style="right: 90px; top: 1300px; width: 250px; height: 160px; transform: rotate(-4deg)"></div>
+
+          <div class="cline" style="left: 220px; top: 400px; width: 220px; transform: rotate(28deg)"></div>
+          <div class="cline" style="right: 180px; top: 340px; width: 200px; transform: rotate(-22deg)"></div>
+          <div class="cline" style="left: 260px; top: 1260px; width: 220px; transform: rotate(-18deg)"></div>
+
+          <div class="cnote" style="left: 90px; top: 560px; transform: rotate(-3deg)">TAREA #47</div>
+          <div class="cnote" style="right: 70px; top: 700px; transform: rotate(3deg)">14 NOTAS SIN LEER</div>
+          <div class="cnote" style="left: 110px; top: 900px; transform: rotate(2deg)">PLAN B?</div>
+
+          <div id="chaos-shout" class="grotesk">¿POR DÓNDE EMPIEZO?</div>
+        </div>
+      </section>
+
+      <!-- ============ 3. CONSTRUYE :: 2.15 - 3.85 ============ -->
+      <section id="scene-build" class="scene clip" data-start="2.15" data-duration="1.70" data-track-index="3">
+        <div id="build-grid"></div>
+        <div id="build-word" class="grotesk">CONSTRUYE.</div>
+        <div id="build-stack">
+          <div class="build-card" id="bc-1">
+            <div class="cdot"></div>
+            <div class="cbar" style="top: 60px; width: 70%;"></div>
+            <div class="cbar" style="top: 96px; width: 45%;"></div>
+          </div>
+          <div class="build-card" id="bc-2">
+            <div class="cdot"></div>
+            <div class="cbar" style="top: 60px; width: 55%;"></div>
+            <div class="cbar" style="top: 96px; width: 65%;"></div>
+          </div>
+          <div class="build-card" id="bc-3">
+            <div class="cdot"></div>
+            <div class="cbar" style="top: 60px; width: 62%;"></div>
+            <div class="cbar" style="top: 96px; width: 38%;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 4. AUTOMATIZA :: 3.75 - 5.55 ============ -->
+      <section id="scene-automate" class="scene clip" data-start="3.75" data-duration="1.80" data-track-index="4">
+        <div id="automate-word" class="grotesk">AUTOMATIZA.</div>
+        <div id="automate-graph">
+          <div class="anode" id="an-1" style="left: 50%; top: 40px;"><div class="acore"></div></div>
+          <div class="anode" id="an-2" style="left: 15%; top: 260px;"><div class="acore"></div></div>
+          <div class="anode" id="an-3" style="left: 85%; top: 260px;"><div class="acore"></div></div>
+          <div class="anode" id="an-4" style="left: 15%; top: 480px;"><div class="acore"></div></div>
+          <div class="anode" id="an-5" style="left: 85%; top: 480px;"><div class="acore"></div></div>
+
+          <div class="alink" id="al-1" style="left: 50%; top: 82px; width: 220px; transform: rotate(120deg);"><div class="aflow"></div></div>
+          <div class="alink" id="al-2" style="left: 50%; top: 82px; width: 220px; transform: rotate(60deg);"><div class="aflow"></div></div>
+          <div class="alink" id="al-3" style="left: 15%; top: 302px; width: 220px; transform: rotate(90deg);"><div class="aflow"></div></div>
+          <div class="alink" id="al-4" style="left: 85%; top: 302px; width: 220px; transform: rotate(90deg);"><div class="aflow"></div></div>
+        </div>
+        <div id="automate-status" class="mono">0 HUMANOS REQUERIDOS</div>
+      </section>
+
+      <!-- ============ 5. ESCALA :: 5.45 - 7.35 ============ -->
+      <section id="scene-scale" class="scene clip" data-start="5.45" data-duration="1.90" data-track-index="5">
+        <div id="scale-panel"></div>
+        <div id="scale-word" class="grotesk">ESCALA.</div>
+        <div id="scale-metric-label" class="mono">USUARIOS ACTIVOS</div>
+        <div id="scale-metric" data-layout-allow-overflow>0</div>
+        <div id="scale-bars">
+          <div class="sbar" id="sb-1" style="height: 14%"></div>
+          <div class="sbar" id="sb-2" style="height: 26%"></div>
+          <div class="sbar" id="sb-3" style="height: 38%"></div>
+          <div class="sbar" id="sb-4" style="height: 58%"></div>
+          <div class="sbar" id="sb-5" style="height: 80%"></div>
+          <div class="sbar" id="sb-6" style="height: 100%"></div>
+        </div>
+      </section>
+
+      <!-- ============ 6. MANIFIESTO :: 7.25 - 10.00 ============ -->
+      <section id="scene-manifesto" class="scene clip" data-start="7.25" data-duration="2.75" data-track-index="6">
+        <div id="manifesto-dot"></div>
+        <div id="manifesto-card-1">
+          <div class="line grotesk" style="font-size: 108px;">NO CREES</div>
+          <div class="line grotesk" style="font-size: 108px;">SOLO UN NEGOCIO.</div>
+        </div>
+        <div id="manifesto-card-2">
+          <div class="line grotesk" style="font-size: 108px;">CONSTRUYE</div>
+          <div class="line grotesk" style="font-size: 108px;">UN <span class="accent">SISTEMA.</span></div>
+        </div>
+        <div id="manifesto-final-cursor"><span class="cursor" id="final-cursor"></span></div>
+        <div class="flash" id="hard-cut-flash"></div>
+      </section>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      // ---- text-fit pass (deterministic, runs once before the timeline) ----
+      function fitWord(el, baseFontSize, minFontSize, maxWidth) {
+        if (!el || !window.__hyperframes || !window.__hyperframes.fitTextFontSize) return;
+        var fit = window.__hyperframes.fitTextFontSize(el.textContent, {
+          fontFamily: "Arial Black, Helvetica Neue, Arial, sans-serif",
+          fontWeight: 900,
+          maxWidth: maxWidth,
+          baseFontSize: baseFontSize,
+          minFontSize: minFontSize,
+        });
+        if (fit && fit.fontSize) el.style.fontSize = fit.fontSize + "px";
+      }
+      fitWord(document.getElementById("build-word"), 128, 64, 960);
+      fitWord(document.getElementById("automate-word"), 110, 56, 960);
+      fitWord(document.getElementById("scale-word"), 128, 64, 960);
+      fitWord(document.getElementById("chaos-shout"), 70, 42, 900);
+
+      const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+
+      tl.set(["#scene-chaos", "#scene-build", "#scene-automate", "#scene-scale"], { opacity: 0 }, 0);
+
+      /* ================= 1. IDEA (0 - 1.05) ================= */
+      tl.fromTo("#idea-tag", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.2 }, 0.05);
+      tl.fromTo(
+        "#idea-line1",
+        { opacity: 0, scale: 0.8 },
+        { opacity: 1, scale: 1, duration: 0.3, ease: "power4.out" },
+        0.15
+      );
+      // "IDEA" punches up in scale
+      tl.to("#idea-word", { scale: 1.35, duration: 0.28, ease: "back.out(2.6)" }, 0.5);
+      // cursor blink (finite)
+      tl.to("#idea-cursor", { opacity: 0, duration: 0.12, repeat: 5, yoyo: true }, 0.15);
+      // aggressive zoom into the letter "A" -> whip into chaos
+      tl.to(
+        "#scene-idea",
+        { scale: 6, opacity: 0, duration: 0.32, ease: "power2.in", transformOrigin: "62% 48%" },
+        0.78
+      );
+
+      /* ================= 2. CAOS (0.95 - 2.25) ================= */
+      tl.fromTo(
+        "#scene-chaos",
+        { scale: 0.2, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.22, ease: "power2.out" },
+        0.95
+      );
+      tl.to(".cblock", { opacity: 1, duration: 0.12, stagger: 0.04 }, 1.05);
+      tl.to(".cnote", { opacity: 1, duration: 0.12, stagger: 0.05 }, 1.12);
+      tl.fromTo(".cline", { scaleX: 0 }, { scaleX: 1, duration: 0.18, stagger: 0.05, ease: "power2.inOut" }, 1.15);
+      // screen jitter (finite)
+      tl.to("#chaos-shake", { x: 10, y: -8, duration: 0.05, repeat: 10, yoyo: true, ease: "none" }, 1.1);
+
+      // rapid-fire phrases
+      tl.fromTo(
+        "#chaos-shout",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.12 },
+        1.15
+      );
+      tl.to("#chaos-shout", { opacity: 0, duration: 0.1 }, 1.45);
+      tl.set("#chaos-shout", { innerText: "NO TENGO TIEMPO." }, 1.46);
+      tl.fromTo("#chaos-shout", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.12 }, 1.56);
+      tl.to("#chaos-shout", { opacity: 0, duration: 0.1 }, 1.78);
+      tl.set("#chaos-shout", { innerText: "DEMASIADAS IDEAS." }, 1.79);
+      tl.fromTo("#chaos-shout", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.12 }, 1.89);
+
+      // violent compression toward center -> BUILD
+      tl.to(
+        ".cblock, .cnote, .cline",
+        { x: 0, y: 0, scale: 0.05, opacity: 0, duration: 0.22, stagger: 0.01, ease: "power3.in" },
+        2.0
+      );
+      tl.to("#chaos-shout", { scale: 0.1, opacity: 0, duration: 0.2, ease: "power3.in" }, 2.02);
+      tl.to("#scene-chaos", { scale: 0.15, opacity: 0, duration: 0.22, ease: "power2.in" }, 2.03);
+      tl.set(".cblock, .cnote, .cline, #chaos-shout", { opacity: 0 }, 2.15);
+
+      /* ================= 3. CONSTRUYE (2.15 - 3.85) ================= */
+      tl.fromTo(
+        "#scene-build",
+        { scale: 3.2, opacity: 0, rotationY: 18 },
+        { scale: 1, opacity: 1, rotationY: 0, duration: 0.3, ease: "power3.out" },
+        2.15
+      );
+      tl.to("#build-grid", { opacity: 1, duration: 0.25 }, 2.2);
+      tl.fromTo(
+        "#build-word",
+        { opacity: 0, scale: 1.6 },
+        { opacity: 1, scale: 1, duration: 0.32, ease: "back.out(1.8)" },
+        2.28
+      );
+      tl.fromTo(
+        "#bc-1",
+        { opacity: 0, y: 70, rotationX: 55 },
+        { opacity: 1, y: 0, rotationX: 0, duration: 0.32, ease: "back.out(1.5)" },
+        2.55
+      );
+      tl.fromTo(
+        "#bc-2",
+        { opacity: 0, y: 70, rotationX: 55 },
+        { opacity: 1, y: 0, rotationX: 0, duration: 0.32, ease: "back.out(1.5)" },
+        2.68
+      );
+      tl.fromTo(
+        "#bc-3",
+        { opacity: 0, y: 70, rotationX: 55 },
+        { opacity: 1, y: 0, rotationX: 0, duration: 0.32, ease: "back.out(1.5)" },
+        2.81
+      );
+      tl.to("#scene-build", { rotationY: -6, duration: 0.5, ease: "sine.inOut" }, 3.0);
+      // exit — snaps flat, zooms into automate
+      tl.to(".build-card", { opacity: 0, scaleY: 0.15, duration: 0.16, stagger: 0.03, ease: "power2.in" }, 3.55);
+      tl.to("#build-word", { opacity: 0, scale: 0.7, duration: 0.16, ease: "power2.in" }, 3.55);
+      tl.to("#scene-build", { scale: 0.6, opacity: 0, duration: 0.2, ease: "power2.in" }, 3.6);
+      tl.set(".build-card", { opacity: 0 }, 3.75);
+      tl.set("#build-word", { opacity: 0 }, 3.75);
+
+      /* ================= 4. AUTOMATIZA (3.75 - 5.55) ================= */
+      tl.fromTo(
+        "#scene-automate",
+        { scale: 1.6, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.26, ease: "power3.out" },
+        3.75
+      );
+      tl.fromTo(
+        "#automate-word",
+        { opacity: 0, y: -30 },
+        { opacity: 1, y: 0, duration: 0.28, ease: "power4.out" },
+        3.85
+      );
+      tl.fromTo(".alink", { scaleX: 0 }, { scaleX: 1, duration: 0.16, stagger: 0.1, ease: "power2.inOut" }, 4.15);
+      tl.fromTo(
+        ".anode",
+        { scale: 0.3 },
+        { opacity: 1, scale: 1, duration: 0.18, stagger: 0.1, ease: "back.out(2.2)" },
+        4.15
+      );
+      tl.to(".anode .acore", { backgroundColor: "#ff5500", duration: 0.14, stagger: 0.1 }, 4.25);
+      tl.to(".aflow", { opacity: 1, duration: 0.01, stagger: 0.1 }, 4.3);
+      tl.to(".aflow", { x: 210, duration: 0.26, stagger: 0.1, ease: "power1.inOut" }, 4.3);
+      tl.to(".aflow", { opacity: 0, duration: 0.1, stagger: 0.1 }, 4.5);
+      // connections multiply — quick second wave
+      tl.to(".alink", { scaleX: 1.06, duration: 0.1, repeat: 3, yoyo: true, stagger: 0.03 }, 4.85);
+      tl.fromTo("#automate-status", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.24 }, 5.05);
+      // exit — graph collapses to a point, wormhole zoom into scale
+      tl.to(".anode, .alink, #automate-status", { opacity: 0, duration: 0.14, stagger: 0.02, ease: "power2.in" }, 5.28);
+      tl.to("#automate-word", { opacity: 0, scale: 0.8, duration: 0.14, ease: "power2.in" }, 5.28);
+      tl.to("#scene-automate", { scale: 3.4, opacity: 0, duration: 0.22, ease: "power2.in" }, 5.32);
+      tl.set(".anode, .alink, #automate-status", { opacity: 0 }, 5.45);
+      tl.set("#automate-word", { opacity: 0 }, 5.45);
+
+      /* ================= 5. ESCALA (5.45 - 7.35) ================= */
+      tl.fromTo(
+        "#scene-scale",
+        { scale: 0.2, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.24, ease: "power2.out" },
+        5.45
+      );
+      tl.fromTo("#scale-panel", { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.26 }, 5.5);
+      tl.fromTo(
+        "#scale-word",
+        { opacity: 0, scale: 1.5 },
+        { opacity: 1, scale: 1, duration: 0.28, ease: "back.out(1.8)" },
+        5.62
+      );
+      tl.fromTo("#scale-metric-label", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 5.75);
+      tl.fromTo(".sbar", { scaleY: 0 }, { scaleY: 1, duration: 0.3, stagger: 0.05, ease: "power3.out" }, 5.9);
+      // aggressive discrete jumps: 0 -> 10 -> 100 -> 1.000 -> 10.000
+      tl.set("#scale-metric", { innerText: "0", opacity: 1 }, 5.85);
+      tl.to("#scale-metric", { scale: 1.15, duration: 0.06, yoyo: true, repeat: 1 }, 6.05);
+      tl.set("#scale-metric", { innerText: "10" }, 6.1);
+      tl.to("#scale-metric", { scale: 1.15, duration: 0.06, yoyo: true, repeat: 1 }, 6.25);
+      tl.set("#scale-metric", { innerText: "100" }, 6.3);
+      tl.to("#scale-metric", { scale: 1.15, duration: 0.06, yoyo: true, repeat: 1 }, 6.45);
+      tl.set("#scale-metric", { innerText: "1.000" }, 6.5);
+      tl.to("#scale-metric", { scale: 1.15, duration: 0.06, yoyo: true, repeat: 1 }, 6.65);
+      tl.set("#scale-metric", { innerText: "10.000" }, 6.7);
+      tl.to("#scale-metric", { scale: 1.25, duration: 0.14, ease: "back.out(3)" }, 6.78);
+      // exit — hard slam away
+      tl.to("#scene-scale", { scale: 1.6, opacity: 0, duration: 0.2, ease: "power2.in" }, 7.15);
+
+      /* ================= 6. MANIFIESTO (7.25 - 10.00) ================= */
+      // collapse dot + black beat
+      tl.fromTo(
+        "#manifesto-dot",
+        { opacity: 0, scale: 3 },
+        { opacity: 1, scale: 1, duration: 0.12, ease: "power2.in" },
+        7.25
+      );
+      tl.to("#manifesto-dot", { scale: 0.2, opacity: 0, duration: 0.12, ease: "power2.in" }, 7.4);
+
+      tl.fromTo(
+        "#manifesto-card-1",
+        { opacity: 0, scale: 1.15 },
+        { opacity: 1, scale: 1, duration: 0.22, ease: "power3.out" },
+        7.55
+      );
+      // hard cut flash + swap
+      tl.to("#hard-cut-flash", { opacity: 1, duration: 0.045 }, 8.2);
+      tl.set("#manifesto-card-1", { opacity: 0 }, 8.245);
+      tl.to("#hard-cut-flash", { opacity: 0, duration: 0.045 }, 8.245);
+      tl.fromTo(
+        "#manifesto-card-2",
+        { opacity: 0, scale: 1.15 },
+        { opacity: 1, scale: 1, duration: 0.22, ease: "power3.out" },
+        8.29
+      );
+      tl.fromTo("#manifesto-final-cursor", { opacity: 0 }, { opacity: 1, duration: 0.15 }, 8.9);
+      tl.to("#final-cursor", { opacity: 0, duration: 0.18, repeat: 5, yoyo: true }, 9.05);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
