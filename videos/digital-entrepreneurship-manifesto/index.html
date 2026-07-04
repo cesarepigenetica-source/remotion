@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Digital Entrepreneurship — Build A System</title>
+    <script src="./gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #06070a;
+      }
+      body {
+        font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #06070a;
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      .grotesk {
+        font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        text-transform: uppercase;
+      }
+
+      .mono {
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .scanlines {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.025) 0px,
+          rgba(255, 255, 255, 0.025) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+        pointer-events: none;
+      }
+
+      .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(0, 0, 0, 0) 45%,
+          rgba(0, 0, 0, 0.55) 100%
+        );
+        pointer-events: none;
+      }
+
+      /* ---------- IDEA ---------- */
+      #scene-idea {
+        background: #06070a;
+        display: grid;
+        place-items: center;
+      }
+      #idea-grid {
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(198, 255, 0, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(198, 255, 0, 0.05) 1px, transparent 1px);
+        background-size: 64px 64px;
+        opacity: 0.5;
+      }
+      #idea-core {
+        position: relative;
+        width: 220px;
+        height: 220px;
+        transform-origin: center;
+      }
+      #idea-glow {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(198, 255, 0, 0.9) 0%, rgba(198, 255, 0, 0) 70%);
+      }
+      #idea-dot {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 28px;
+        height: 28px;
+        margin: -14px 0 0 -14px;
+        border-radius: 50%;
+        background: #c6ff00;
+        box-shadow: 0 0 60px 10px rgba(198, 255, 0, 0.8);
+      }
+      #idea-word {
+        position: absolute;
+        top: 68%;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 6px;
+        font-size: 140px;
+        color: #f5f7fa;
+        white-space: nowrap;
+      }
+      #idea-word .l {
+        display: inline-block;
+        opacity: 0;
+      }
+      #idea-tag {
+        position: absolute;
+        top: 18%;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #6b7280;
+        font-size: 26px;
+        letter-spacing: 0.35em;
+        opacity: 0;
+      }
+
+      /* ---------- CHAOS ---------- */
+      #scene-chaos {
+        background: #0a0a0d;
+      }
+      #chaos-shake {
+        position: absolute;
+        inset: -40px;
+      }
+      #chaos-bg-word {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-size: 260px;
+        color: rgba(255, 59, 59, 0.12);
+        z-index: 0;
+      }
+      .toast {
+        position: absolute;
+        width: 340px;
+        padding: 18px 22px;
+        background: #14161b;
+        border: 1px solid #ff3b3b;
+        border-radius: 10px;
+        color: #f5f7fa;
+        font-family: "Courier New", monospace;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        opacity: 0;
+        z-index: 2;
+      }
+      .toast .dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #ff3b3b;
+        flex-shrink: 0;
+      }
+      .panel-ghost {
+        position: absolute;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.03);
+        opacity: 0;
+        z-index: 1;
+      }
+      .loader-ring {
+        position: absolute;
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        border: 6px solid rgba(255, 255, 255, 0.12);
+        border-top-color: #c6ff00;
+        opacity: 0;
+        z-index: 2;
+      }
+
+      /* ---------- BUILD ---------- */
+      #scene-build {
+        background: #07080b;
+        perspective: 1400px;
+      }
+      #build-blueprint-grid {
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(198, 255, 0, 0.09) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(198, 255, 0, 0.09) 1px, transparent 1px);
+        background-size: 48px 48px;
+        opacity: 0;
+      }
+      #build-stage {
+        position: absolute;
+        top: 320px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 1400px;
+        height: 600px;
+        display: flex;
+        gap: 28px;
+        align-items: stretch;
+        transform-style: preserve-3d;
+      }
+      .build-panel {
+        flex: 1;
+        background: #0d1117;
+        border: 2px solid #1c2530;
+        border-radius: 14px;
+        position: relative;
+        opacity: 0;
+        transform-origin: bottom center;
+      }
+      .build-panel .corner {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        border: 3px solid #c6ff00;
+      }
+      .build-panel .corner.tl {
+        top: -2px;
+        left: -2px;
+        border-right: none;
+        border-bottom: none;
+      }
+      .build-panel .corner.br {
+        bottom: -2px;
+        right: -2px;
+        border-left: none;
+        border-top: none;
+      }
+      .build-panel .panel-bar {
+        position: absolute;
+        left: 20px;
+        right: 20px;
+        height: 14px;
+        background: #29384a;
+        border-radius: 4px;
+      }
+      #build-title {
+        position: absolute;
+        top: 5%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 150px;
+        color: #f5f7fa;
+        opacity: 0;
+        display: flex;
+      }
+      #build-title .l {
+        display: inline-block;
+        opacity: 0;
+      }
+
+      /* ---------- AUTOMATE ---------- */
+      #scene-automate {
+        background: #06070a;
+        display: grid;
+        place-items: center;
+      }
+      #automate-title {
+        position: absolute;
+        top: 9%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 118px;
+        color: #f5f7fa;
+        display: flex;
+        white-space: nowrap;
+      }
+      #automate-title .l {
+        display: inline-block;
+        opacity: 0;
+      }
+      #automate-graph {
+        position: relative;
+        width: 1500px;
+        height: 380px;
+      }
+      .node {
+        position: absolute;
+        top: 50%;
+        width: 96px;
+        height: 96px;
+        margin-top: -48px;
+        border-radius: 50%;
+        background: #0d1117;
+        border: 3px solid #2a3542;
+        display: grid;
+        place-items: center;
+        opacity: 0;
+      }
+      .node .core {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #2a3542;
+      }
+      .link {
+        position: absolute;
+        top: 50%;
+        height: 6px;
+        margin-top: -3px;
+        background: #1c2530;
+        transform-origin: left center;
+        border-radius: 3px;
+      }
+      .link .flow {
+        position: absolute;
+        top: -6px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #c6ff00;
+        box-shadow: 0 0 24px 4px rgba(198, 255, 0, 0.9);
+        opacity: 0;
+      }
+      #automate-metric {
+        position: absolute;
+        bottom: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #6b7280;
+        font-family: "Courier New", monospace;
+        font-size: 24px;
+        letter-spacing: 0.1em;
+        opacity: 0;
+      }
+
+      /* ---------- SCALE ---------- */
+      #scene-scale {
+        background: #07080b;
+        display: grid;
+        place-items: center;
+      }
+      #scale-inner {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        display: grid;
+        place-items: center;
+        transform-origin: center;
+      }
+      #scale-title {
+        position: absolute;
+        top: 8%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 150px;
+        color: #f5f7fa;
+        display: flex;
+      }
+      #scale-title .l {
+        display: inline-block;
+        opacity: 0;
+      }
+      #scale-chart {
+        position: absolute;
+        bottom: 16%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 900px;
+        height: 380px;
+        display: flex;
+        align-items: flex-end;
+        gap: 26px;
+      }
+      .bar {
+        flex: 1;
+        background: linear-gradient(to top, #6f8c00, #c6ff00);
+        border-radius: 6px 6px 0 0;
+        transform-origin: bottom center;
+        height: 100%;
+      }
+      #scale-metric-wrap {
+        position: absolute;
+        top: 30%;
+        right: 9%;
+        text-align: right;
+        opacity: 0;
+      }
+      #scale-metric-label {
+        color: #6b7280;
+        font-family: "Courier New", monospace;
+        font-size: 22px;
+        letter-spacing: 0.2em;
+      }
+      #scale-metric {
+        color: #c6ff00;
+        font-size: 92px;
+        font-weight: 900;
+        font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+      }
+      .tile {
+        position: absolute;
+        width: 130px;
+        height: 90px;
+        border-radius: 10px;
+        background: #0d1117;
+        border: 2px solid #1c2530;
+        opacity: 0;
+      }
+      .tile .ln {
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        height: 8px;
+        background: #1c2530;
+        border-radius: 3px;
+      }
+
+      /* ---------- MANIFESTO ---------- */
+      #scene-manifesto {
+        background: #05060a;
+        display: grid;
+        place-items: center;
+      }
+      #manifesto-grid {
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+        background-size: 96px 96px;
+      }
+      #manifesto-wrap {
+        position: relative;
+        width: 1700px;
+        text-align: center;
+        opacity: 0;
+        transform: scale(1.4) rotate(-2deg);
+      }
+      #manifesto-line1 {
+        font-size: 96px;
+        color: #f5f7fa;
+        line-height: 1.05;
+      }
+      #manifesto-line2 {
+        font-size: 96px;
+        color: #c6ff00;
+        line-height: 1.05;
+        margin-top: 6px;
+      }
+      #manifesto-underline {
+        margin: 40px auto 0;
+        width: 420px;
+        height: 8px;
+        background: #c6ff00;
+        border-radius: 4px;
+        transform-origin: center;
+      }
+      #manifesto-kicker {
+        color: #6b7280;
+        font-family: "Courier New", monospace;
+        font-size: 24px;
+        letter-spacing: 0.3em;
+        margin-bottom: 34px;
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="10"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- ============ 1. IDEA :: 0.00 - 1.65 ============ -->
+      <section id="scene-idea" class="scene clip" data-start="0" data-duration="1.65" data-track-index="1">
+        <div id="idea-grid"></div>
+        <div id="idea-tag" class="mono">SPARK · 01</div>
+        <div id="idea-core">
+          <div id="idea-glow"></div>
+          <div id="idea-dot"></div>
+        </div>
+        <div id="idea-word" class="grotesk">
+          <span class="l">I</span><span class="l">D</span><span class="l">E</span><span class="l">A</span>
+        </div>
+        <div class="scanlines"></div>
+      </section>
+
+      <!-- ============ 2. CHAOS :: 1.55 - 3.20 ============ -->
+      <section id="scene-chaos" class="scene clip" data-start="1.55" data-duration="1.65" data-track-index="2">
+        <div id="chaos-shake" data-layout-allow-overflow>
+          <div id="chaos-bg-word" class="grotesk">CHAOS</div>
+
+          <div class="panel-ghost" style="left: 120px; top: 140px; width: 380px; height: 240px; transform: rotate(-6deg)"></div>
+          <div class="panel-ghost" style="right: 160px; top: 90px; width: 340px; height: 200px; transform: rotate(4deg)"></div>
+          <div class="panel-ghost" style="left: 260px; bottom: 120px; width: 300px; height: 180px; transform: rotate(3deg)"></div>
+
+          <div class="loader-ring" style="left: 220px; top: 420px;"></div>
+          <div class="loader-ring" style="right: 300px; bottom: 200px; width: 60px; height: 60px;"></div>
+
+          <div class="toast" style="left: 620px; top: 160px; transform: rotate(-3deg)">
+            <div class="dot"></div>
+            <span>ERROR: 47 UNREAD TABS</span>
+          </div>
+          <div class="toast" style="right: 220px; top: 340px; transform: rotate(2deg)">
+            <div class="dot"></div>
+            <span>DEADLINE IN 00:04:12</span>
+          </div>
+          <div class="toast" style="left: 780px; bottom: 160px; transform: rotate(-2deg)">
+            <div class="dot"></div>
+            <span>17 SLACK PINGS</span>
+          </div>
+          <div class="toast" style="right: 480px; bottom: 280px; transform: rotate(4deg)">
+            <div class="dot"></div>
+            <span>WHERE DO I EVEN START</span>
+          </div>
+        </div>
+        <div class="vignette"></div>
+      </section>
+
+      <!-- ============ 3. BUILD :: 3.10 - 4.85 ============ -->
+      <section id="scene-build" class="scene clip" data-start="3.10" data-duration="1.75" data-track-index="3">
+        <div id="build-blueprint-grid"></div>
+        <div id="build-title" class="grotesk">
+          <span class="l">B</span><span class="l">U</span><span class="l">I</span><span class="l">L</span><span class="l">D</span>
+        </div>
+        <div id="build-stage">
+          <div class="build-panel" id="bp-1">
+            <div class="corner tl"></div><div class="corner br"></div>
+            <div class="panel-bar" style="top: 40px; width: 60%;"></div>
+            <div class="panel-bar" style="top: 74px; width: 40%;"></div>
+          </div>
+          <div class="build-panel" id="bp-2">
+            <div class="corner tl"></div><div class="corner br"></div>
+            <div class="panel-bar" style="top: 40px; width: 70%;"></div>
+            <div class="panel-bar" style="top: 74px; width: 50%;"></div>
+            <div class="panel-bar" style="top: 108px; width: 30%;"></div>
+          </div>
+          <div class="build-panel" id="bp-3">
+            <div class="corner tl"></div><div class="corner br"></div>
+            <div class="panel-bar" style="top: 40px; width: 50%;"></div>
+            <div class="panel-bar" style="top: 74px; width: 65%;"></div>
+          </div>
+        </div>
+        <div class="scanlines"></div>
+      </section>
+
+      <!-- ============ 4. AUTOMATE :: 4.75 - 6.50 ============ -->
+      <section id="scene-automate" class="scene clip" data-start="4.75" data-duration="1.75" data-track-index="4">
+        <div id="automate-title" class="grotesk">
+          <span class="l">A</span><span class="l">U</span><span class="l">T</span><span class="l">O</span><span class="l">M</span><span class="l">A</span><span class="l">T</span><span class="l">E</span>
+        </div>
+        <div id="automate-graph">
+          <div class="node" id="an-1" style="left: 0px;"><div class="core"></div></div>
+          <div class="node" id="an-2" style="left: 350px;"><div class="core"></div></div>
+          <div class="node" id="an-3" style="left: 700px;"><div class="core"></div></div>
+          <div class="node" id="an-4" style="left: 1050px;"><div class="core"></div></div>
+          <div class="node" id="an-5" style="left: 1400px;"><div class="core"></div></div>
+
+          <div class="link" id="al-1" style="left: 96px; width: 254px;"><div class="flow"></div></div>
+          <div class="link" id="al-2" style="left: 446px; width: 254px;"><div class="flow"></div></div>
+          <div class="link" id="al-3" style="left: 796px; width: 254px;"><div class="flow"></div></div>
+          <div class="link" id="al-4" style="left: 1146px; width: 254px;"><div class="flow"></div></div>
+        </div>
+        <div id="automate-metric" class="mono">WORKFLOW ACTIVE · 0 HUMANS REQUIRED</div>
+        <div class="scanlines"></div>
+      </section>
+
+      <!-- ============ 5. SCALE :: 6.40 - 8.15 ============ -->
+      <section id="scene-scale" class="scene clip" data-start="6.40" data-duration="1.75" data-track-index="5">
+        <div id="scale-inner" data-layout-allow-overflow>
+          <div id="scale-title" class="grotesk">
+            <span class="l">S</span><span class="l">C</span><span class="l">A</span><span class="l">L</span><span class="l">E</span>
+          </div>
+
+          <div class="tile" id="st-1" style="left: 200px; top: 260px;"><div class="ln" style="top: 30px; width: 60%;"></div></div>
+          <div class="tile" id="st-2" style="left: 220px; top: 400px;"><div class="ln" style="top: 30px; width: 45%;"></div></div>
+          <div class="tile" id="st-3" style="right: 220px; top: 260px;"><div class="ln" style="top: 30px; width: 55%;"></div></div>
+          <div class="tile" id="st-4" style="right: 200px; top: 400px;"><div class="ln" style="top: 30px; width: 65%;"></div></div>
+
+          <div id="scale-chart">
+            <div class="bar" id="sb-1" style="height: 30%"></div>
+            <div class="bar" id="sb-2" style="height: 48%"></div>
+            <div class="bar" id="sb-3" style="height: 42%"></div>
+            <div class="bar" id="sb-4" style="height: 68%"></div>
+            <div class="bar" id="sb-5" style="height: 60%"></div>
+            <div class="bar" id="sb-6" style="height: 92%"></div>
+            <div class="bar" id="sb-7" style="height: 100%"></div>
+          </div>
+
+          <div id="scale-metric-wrap">
+            <div id="scale-metric-label" class="mono">MRR</div>
+            <div id="scale-metric">$0</div>
+          </div>
+        </div>
+        <div class="vignette"></div>
+      </section>
+
+      <!-- ============ 6. MANIFESTO :: 8.05 - 10.00 ============ -->
+      <section id="scene-manifesto" class="scene clip" data-start="8.05" data-duration="1.95" data-track-index="6">
+        <div id="manifesto-grid"></div>
+        <div id="manifesto-wrap">
+          <div id="manifesto-kicker" class="mono">THE SYSTEM MANIFESTO</div>
+          <div id="manifesto-line1" class="grotesk">Don't start a business.</div>
+          <div id="manifesto-line2" class="grotesk">Build a system.</div>
+          <div id="manifesto-underline"></div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+
+      /* ================= 1. IDEA ================= */
+      tl.fromTo("#idea-core", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(2.4)" }, 0.05);
+      tl.to("#idea-glow", { opacity: 0.4, duration: 0.35, repeat: 1, yoyo: true, ease: "sine.inOut" }, 0.5);
+      tl.fromTo("#idea-tag", { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.35 }, 0.15);
+      tl.fromTo(
+        "#idea-word .l",
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 0.35, stagger: 0.06, ease: "power4.out" },
+        0.55
+      );
+      // exit punch — zoom into chaos
+      tl.to("#scene-idea", { scale: 2.4, opacity: 0, duration: 0.28, ease: "power2.in" }, 1.35);
+
+      /* ================= 2. CHAOS ================= */
+      tl.fromTo("#scene-chaos", { scale: 1.6, rotation: -3, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: 0.22, ease: "power2.out" }, 1.55);
+      tl.fromTo("#chaos-bg-word", { scale: 1.4, opacity: 0 }, { scale: 1, opacity: 0.12, duration: 0.3 }, 1.6);
+
+      tl.to(".panel-ghost", { opacity: 1, duration: 0.18, stagger: 0.05 }, 1.7);
+      tl.to(".loader-ring", { opacity: 1, duration: 0.15, stagger: 0.08 }, 1.78);
+      tl.to(".loader-ring", { rotation: 720, duration: 1.2, ease: "none" }, 1.78);
+      tl.to(".toast", { opacity: 1, duration: 0.12, stagger: 0.07 }, 1.85);
+      // frantic flicker
+      tl.to(".toast", { opacity: 0.35, duration: 0.06, repeat: 5, yoyo: true, stagger: 0.02 }, 2.2);
+      // screen shake
+      tl.to("#chaos-shake", { x: 8, y: -6, duration: 0.045, repeat: 9, yoyo: true, ease: "none" }, 1.9);
+      // exit collapse — everything flies apart
+      tl.to(".toast, .panel-ghost, .loader-ring", { opacity: 0, scale: 0.6, duration: 0.2, stagger: 0.02, ease: "power2.in" }, 2.9);
+      tl.to("#chaos-bg-word", { opacity: 0, scale: 0.7, duration: 0.2, ease: "power2.in" }, 2.9);
+      tl.to("#scene-chaos", { rotationX: 20, opacity: 0, duration: 0.2, ease: "power2.in" }, 3.0);
+      tl.set(".toast, .panel-ghost, .loader-ring", { opacity: 0 }, 3.1);
+      tl.set("#chaos-bg-word", { opacity: 0 }, 3.1);
+
+      /* ================= 3. BUILD ================= */
+      tl.fromTo("#scene-build", { rotationX: -55, opacity: 0 }, { rotationX: 0, opacity: 1, duration: 0.3, ease: "power3.out" }, 3.1);
+      tl.to("#build-blueprint-grid", { opacity: 1, duration: 0.3 }, 3.1);
+      tl.fromTo(
+        "#build-title .l",
+        { opacity: 0, y: -50 },
+        { opacity: 1, y: 0, duration: 0.3, stagger: 0.05, ease: "power4.out" },
+        3.2
+      );
+      tl.to("#build-title", { opacity: 1, duration: 0.01 }, 3.2);
+
+      tl.fromTo(
+        "#bp-1",
+        { opacity: 0, rotationX: 70, y: 60 },
+        { opacity: 1, rotationX: 0, y: 0, duration: 0.35, ease: "back.out(1.5)" },
+        3.55
+      );
+      tl.fromTo(
+        "#bp-2",
+        { opacity: 0, rotationX: 70, y: 60 },
+        { opacity: 1, rotationX: 0, y: 0, duration: 0.35, ease: "back.out(1.5)" },
+        3.65
+      );
+      tl.fromTo(
+        "#bp-3",
+        { opacity: 0, rotationX: 70, y: 60 },
+        { opacity: 1, rotationX: 0, y: 0, duration: 0.35, ease: "back.out(1.5)" },
+        3.75
+      );
+      // exit — panels snap down, scene zooms into automate
+      tl.to(".build-panel", { opacity: 0, scaleY: 0.2, duration: 0.18, stagger: 0.03, ease: "power2.in" }, 4.62);
+      tl.to("#build-title", { opacity: 0, scale: 0.8, duration: 0.18, ease: "power2.in" }, 4.62);
+      tl.to("#scene-build", { scale: 0.7, opacity: 0, duration: 0.2, ease: "power2.in" }, 4.65);
+      tl.set(".build-panel", { opacity: 0 }, 4.75);
+      tl.set("#build-title", { opacity: 0 }, 4.75);
+
+      /* ================= 4. AUTOMATE ================= */
+      tl.fromTo(
+        "#scene-automate",
+        { scale: 1.5, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.28, ease: "power3.out" },
+        4.75
+      );
+      tl.fromTo(
+        "#automate-title .l",
+        { opacity: 0, y: -40 },
+        { opacity: 1, y: 0, duration: 0.3, stagger: 0.045, ease: "power4.out" },
+        4.85
+      );
+
+      tl.fromTo(".link", { scaleX: 0 }, { scaleX: 1, duration: 0.22, stagger: 0.14, ease: "power2.inOut" }, 5.25);
+      tl.fromTo(
+        ".node",
+        { scale: 0.4 },
+        { opacity: 1, scale: 1, duration: 0.22, stagger: 0.14, ease: "back.out(2.2)" },
+        5.25
+      );
+      tl.to(
+        ".node .core",
+        { backgroundColor: "#c6ff00", duration: 0.18, stagger: 0.14 },
+        5.35
+      );
+      tl.to(".flow", { opacity: 1, duration: 0.01, stagger: 0.14 }, 5.35);
+      tl.to(".flow", { x: 236, duration: 0.32, stagger: 0.14, ease: "power1.inOut" }, 5.35);
+      tl.to(".flow", { opacity: 0, duration: 0.12, stagger: 0.14 }, 5.6);
+      tl.fromTo("#automate-metric", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, 5.9);
+      // exit — graph collapses into a single point, wormhole zoom to scale
+      tl.to(".node, .link, #automate-metric", { opacity: 0, duration: 0.16, stagger: 0.02, ease: "power2.in" }, 6.28);
+      tl.to("#automate-title", { opacity: 0, scale: 0.85, duration: 0.16, ease: "power2.in" }, 6.28);
+      tl.to("#scene-automate", { scale: 3.2, opacity: 0, duration: 0.22, ease: "power2.in" }, 6.3);
+      tl.set(".node, .link, #automate-metric", { opacity: 0 }, 6.4);
+      tl.set("#automate-title", { opacity: 0 }, 6.4);
+
+      /* ================= 5. SCALE ================= */
+      tl.fromTo(
+        "#scene-scale",
+        { scale: 0.25, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.26, ease: "power2.out" },
+        6.4
+      );
+      tl.fromTo(
+        "#scale-title .l",
+        { opacity: 0, y: -50 },
+        { opacity: 1, y: 0, duration: 0.3, stagger: 0.05, ease: "power4.out" },
+        6.5
+      );
+
+      tl.fromTo(".tile", { scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.22, stagger: 0.05, ease: "back.out(1.8)" }, 6.85);
+      tl.fromTo(".bar", { scaleY: 0 }, { scaleY: 1, duration: 0.4, stagger: 0.06, ease: "power3.out" }, 7.0);
+
+      tl.fromTo("#scale-metric-wrap", { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.2 }, 7.15);
+      const scaleCounter = { v: 0 };
+      tl.to(
+        scaleCounter,
+        {
+          v: 128400,
+          duration: 0.75,
+          ease: "power1.out",
+          onUpdate: () => {
+            const el = document.getElementById("scale-metric");
+            if (el) el.innerText = "$" + Math.round(scaleCounter.v).toLocaleString("en-US");
+          },
+        },
+        7.15
+      );
+      // slow pull-back to reveal the full board
+      tl.fromTo("#scale-inner", { scale: 1.12 }, { scale: 1, duration: 0.7, ease: "power2.out" }, 6.9);
+      // exit — hard slam away
+      tl.to("#scene-scale", { scale: 1.5, opacity: 0, duration: 0.2, ease: "power2.in" }, 7.95);
+
+      /* ================= 6. MANIFESTO ================= */
+      tl.fromTo(
+        "#manifesto-kicker",
+        { opacity: 0, y: -12 },
+        { opacity: 1, y: 0, duration: 0.25 },
+        8.15
+      );
+      tl.fromTo(
+        "#manifesto-wrap",
+        { opacity: 0, scale: 1.4, rotation: -2 },
+        { opacity: 1, scale: 1, rotation: 0, duration: 0.4, ease: "back.out(1.6)" },
+        8.2
+      );
+      tl.fromTo("#manifesto-underline", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 8.65);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
