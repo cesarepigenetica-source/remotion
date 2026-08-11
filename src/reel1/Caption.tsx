@@ -45,7 +45,8 @@ export const Caption: React.FC<{
   duration: number;
   fontSize?: number;
   showCursor?: boolean;
-}> = ({ text, duration, fontSize, showCursor }) => {
+  topPercent?: number;
+}> = ({ text, duration, fontSize, showCursor, topPercent = 50 }) => {
   const frame = useCurrentFrame();
   const tokens = tokenize(text);
   const size = fontSize ?? fontSizeForWordCount(tokens.length);
@@ -69,7 +70,7 @@ export const Caption: React.FC<{
         position: "absolute",
         left: 90,
         right: 90,
-        top: "50%",
+        top: `${topPercent}%`,
         transform: `translateY(calc(-50% + ${groupTranslateY}px)) scale(${groupScale})`,
         opacity: groupOpacity,
         textAlign: "center",
